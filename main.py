@@ -15,17 +15,13 @@ def main():
     wled_controller = WLEDController()
     
     def sound_callback(amplitude):
-        hue = int((wled_controller.sound_color_hue + 2) % 360)
-        wled_controller.sound_color_hue = hue
-        brightness = int(config.MIN_BRIGHTNESS + 
-                       (config.MAX_BRIGHTNESS - config.MIN_BRIGHTNESS) * amplitude)
-        wled_controller.set_sound_color(hue, brightness)
+        wled_controller.set_audio_gipnojam_from_amplitude(amplitude)
     
 
     wled_controller.sound_color_hue = 0
     audio_processor = AudioProcessor(sound_callback)
     
-    motion_server = MotionServer(wled_controller)
+    motion_server = MotionServer(wled_controller, debug=True)
     
     audio_thread = Thread(target=audio_processor.start)
     motion_thread = Thread(target=motion_server.start)
@@ -42,6 +38,7 @@ def main():
     except KeyboardInterrupt:
         audio_processor.stop()
         motion_server.stop()
+        wled_controller.stop()
 
 if __name__ == "__main__":
     main()
